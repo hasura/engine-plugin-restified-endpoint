@@ -8,6 +8,8 @@ interface RawRequest {
   method: string;
   // query can be null as well
   query: string | null;
+  // body can be null as well
+  body: JSON | null;
 }
 
 export const restifiedHandler = (request) => {
@@ -23,7 +25,7 @@ export const restifiedHandler = (request) => {
       });
       span.end();
       return new Response(JSON.stringify({ message: "unauthorized request" }), {
-        status: 401,
+        status: 400,
       });
     }
     // extract information from request body:
@@ -37,7 +39,7 @@ export const restifiedHandler = (request) => {
 
     // Find matching RESTified endpoint
     const endpoint = Config.restifiedEndpoints.find(
-      (e) => matchPath(e.path, path) && e.method === method,
+      (e) => matchPath(e.path, path) && e.methods.includes(method),
     );
 
     if (!endpoint) {
@@ -47,7 +49,7 @@ export const restifiedHandler = (request) => {
       });
       span.end();
       return new Response(JSON.stringify({ message: "Endpoint not found" }), {
-        status: 404,
+        status: 400,
       });
     }
 
@@ -117,6 +119,14 @@ function extractVariables(request: RawRequest, endpoint) {
       }
     })();
   }
+  // Extract variables from the request body
+  console.log(request.body);
+  if (request.body) {
+    for (const [key, value] of Object.entries(request.body)) {
+      variables[key] = value;
+    }
+  }
+  console.log(variables);
   return variables;
 }
 
