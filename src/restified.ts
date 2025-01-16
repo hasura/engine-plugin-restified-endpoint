@@ -120,13 +120,11 @@ function extractVariables(request: RawRequest, endpoint) {
     })();
   }
   // Extract variables from the request body
-  console.log(request.body);
   if (request.body) {
     for (const [key, value] of Object.entries(request.body)) {
       variables[key] = value;
     }
   }
-  console.log(variables);
   return variables;
 }
 
