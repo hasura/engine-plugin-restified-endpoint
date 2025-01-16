@@ -14,7 +14,7 @@ export const Config = {
   restifiedEndpoints: [
     {
       path: "/v1/restified/:offset",
-      method: "GET",
+      methods: ["GET", "POST"],
       query: `
         query MyQuery($limit: Int = 10, $offset: Int = 10) {
           Album(limit: $limit, offset: $offset) {
