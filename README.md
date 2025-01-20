@@ -9,7 +9,7 @@ This plugin for Hasura DDN (Distributed Data Network) allows you to add RESTifie
 - Transform GraphQL queries into REST-like endpoints
 - Configurable endpoint mapping
 - Authentication support
-- Variable extraction from URL parameters, query strings, and request bodies
+- Variable extraction from URL parameters, query strings, and request body
 - OpenTelemetry integration for tracing
 
 ## How it works
@@ -48,7 +48,7 @@ export const Config = {
   restifiedEndpoints: [
     {
       path: "/v1/restified/:offset",
-      method: "GET",
+      methods: ["GET"],
       query: `
         query MyQuery($limit: Int = 10, $offset: Int = 10) {
           Album(limit: $limit, offset: $offset) {
@@ -162,7 +162,7 @@ To add new RESTified endpoints, update the `restifiedEndpoints` array in `src/co
 restifiedEndpoints: [
   {
     path: "/v1/rest/users/:id",
-    method: "GET",
+    methods: ["GET"],
     query: `
       query GetUser($id: ID!) {
         user(id: $id) {
@@ -175,7 +175,7 @@ restifiedEndpoints: [
   },
   {
     path: "/v1/rest/posts",
-    method: "GET",
+    method: ["POST"],
     query: `
       mutation CreatePost($title: String!, $content: String!) {
         createPost(input: { title: $title, content: $content }) {
@@ -192,7 +192,6 @@ After adding new endpoints, redeploy the plugin for the changes to take effect.
 
 ## Limitations and Future Improvements
 
-- The plugin currently supports only GET methods. Support for other HTTP methods will be added in the future.
 - Currently, the plugin supports basic variable extraction. More complex scenarios might require additional implementation.
 - OpenAPI Spec documentation generation is not yet implemented.
 - Rate limiting is not currently supported within the plugin.
