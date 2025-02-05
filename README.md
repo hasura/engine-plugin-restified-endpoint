@@ -61,7 +61,7 @@ export const Config = {
 };
 ```
 
-Configure the graphql server URL in `wrangler.toml` (or `.dev.vars`):
+Configure the graphql server URL in `.dev.vars`:
 
 ```toml
 [vars]
@@ -157,6 +157,8 @@ Build DDN supergraph:
 ```sh
 ddn supergraph build create
 ```
+
+Please update the GRAPHQL_SERVER_URL variable in the `wrangler.toml` with the projects graphql endpoint.
 
 **Note**: For end-to-end tracing, you would have to update the `wrangler.toml` file to add the Hasura PAT in `OTEL_EXPORTER_PAT` var.
 
