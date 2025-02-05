@@ -15,7 +15,8 @@ import { instrument, ResolveConfigFn } from "@microlabs/otel-cf-workers";
 const handler = {
   async fetch(request, env, ctx) {
     trace.getActiveSpan()?.setAttribute("internal.visibility", String("user"));
-    return restifiedHandler(request);
+    const graphqlServerUrl = env.GRAPHQL_SERVER_URL;
+    return restifiedHandler(request, graphqlServerUrl);
   },
 };
 

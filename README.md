@@ -9,7 +9,7 @@ This plugin for Hasura DDN (Distributed Data Network) allows you to add RESTifie
 - Transform GraphQL queries into REST-like endpoints
 - Configurable endpoint mapping
 - Authentication support
-- Variable extraction from URL parameters, query strings, and request bodies
+- Variable extraction from URL parameters, query strings, and request body
 - OpenTelemetry integration for tracing
 
 ## How it works
@@ -25,7 +25,7 @@ This plugin for Hasura DDN (Distributed Data Network) allows you to add RESTifie
 
 Configure the plugin in `src/config.ts`:
 
-- `graphqlServer`: GraphQL server settings (URL, headers)
+- `graphqlServer`: GraphQL server settings (headers)
 - `headers`: Authentication headers
 - `restifiedEndpoints`: Array of RESTified endpoint configurations
 
@@ -34,7 +34,6 @@ Example configuration:
 ```typescript
 export const Config = {
   graphqlServer: {
-    url: "http://localhost:3000/graphql",
     headers: {
       additional: {
         "Content-Type": "application/json",
@@ -47,8 +46,8 @@ export const Config = {
   },
   restifiedEndpoints: [
     {
-      path: "/v1/restified/:offset",
-      method: "GET",
+      path: "/v1/api/rest/albums/:offset",
+      methods: ["GET"],
       query: `
         query MyQuery($limit: Int = 10, $offset: Int = 10) {
           Album(limit: $limit, offset: $offset) {
@@ -60,6 +59,13 @@ export const Config = {
     // Add more RESTified endpoints here
   ],
 };
+```
+
+Configure the graphql server URL in `.dev.vars`:
+
+```toml
+[vars]
+GRAPHQL_SERVER_URL = "<GRAPHQL_SERVER_URL>"
 ```
 
 ## Development
@@ -152,6 +158,8 @@ Build DDN supergraph:
 ddn supergraph build create
 ```
 
+Please update the GRAPHQL_SERVER_URL variable in the `wrangler.toml` with the project's graphql endpoint.
+
 **Note**: For end-to-end tracing, you would have to update the `wrangler.toml` file to add the Hasura PAT in `OTEL_EXPORTER_PAT` var.
 
 ## Adding new RESTified endpoints
@@ -161,8 +169,8 @@ To add new RESTified endpoints, update the `restifiedEndpoints` array in `src/co
 ```typescript
 restifiedEndpoints: [
   {
-    path: "/v1/rest/users/:id",
-    method: "GET",
+    path: "/v1/api/rest/users/:id",
+    methods: ["GET"],
     query: `
       query GetUser($id: ID!) {
         user(id: $id) {
@@ -174,8 +182,8 @@ restifiedEndpoints: [
     `,
   },
   {
-    path: "/v1/rest/posts",
-    method: "GET",
+    path: "/v1/api/rest/posts",
+    method: ["POST"],
     query: `
       mutation CreatePost($title: String!, $content: String!) {
         createPost(input: { title: $title, content: $content }) {
@@ -192,7 +200,6 @@ After adding new endpoints, redeploy the plugin for the changes to take effect.
 
 ## Limitations and Future Improvements
 
-- The plugin currently supports only GET methods. Support for other HTTP methods will be added in the future.
 - Currently, the plugin supports basic variable extraction. More complex scenarios might require additional implementation.
 - OpenAPI Spec documentation generation is not yet implemented.
 - Rate limiting is not currently supported within the plugin.

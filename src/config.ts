@@ -1,11 +1,10 @@
 export const Config = {
   graphqlServer: {
-    url: "http://localhost:3000/graphql",
     headers: {
       additional: {
         "Content-Type": "application/json",
       },
-      forward: ["X-Hasura-Role"],
+      forward: ["X-Hasura-Role", "Authorization", "X-Hasura-ddn-token"],
     },
   },
   headers: {
@@ -13,7 +12,7 @@ export const Config = {
   },
   restifiedEndpoints: [
     {
-      path: "/v1/restified/:offset",
+      path: "/v1/api/rest/albums/:offset",
       methods: ["GET", "POST"],
       query: `
         query MyQuery($limit: Int = 10, $offset: Int = 10) {
