@@ -25,7 +25,7 @@ This plugin for Hasura DDN (Distributed Data Network) allows you to add RESTifie
 
 Configure the plugin in `src/config.ts`:
 
-- `graphqlServer`: GraphQL server settings (URL, headers)
+- `graphqlServer`: GraphQL server settings (headers)
 - `headers`: Authentication headers
 - `restifiedEndpoints`: Array of RESTified endpoint configurations
 
@@ -34,7 +34,6 @@ Example configuration:
 ```typescript
 export const Config = {
   graphqlServer: {
-    url: "http://localhost:3000/graphql",
     headers: {
       additional: {
         "Content-Type": "application/json",
@@ -47,7 +46,7 @@ export const Config = {
   },
   restifiedEndpoints: [
     {
-      path: "/v1/restified/:offset",
+      path: "/v1/api/rest/albums/:offset",
       methods: ["GET"],
       query: `
         query MyQuery($limit: Int = 10, $offset: Int = 10) {
@@ -60,6 +59,13 @@ export const Config = {
     // Add more RESTified endpoints here
   ],
 };
+```
+
+Configure the graphql server URL in `wrangler.toml` (or `.dev.vars`):
+
+```toml
+[vars]
+GRAPHQL_SERVER_URL = "<GRAPHQL_SERVER_URL>"
 ```
 
 ## Development
@@ -161,7 +167,7 @@ To add new RESTified endpoints, update the `restifiedEndpoints` array in `src/co
 ```typescript
 restifiedEndpoints: [
   {
-    path: "/v1/rest/users/:id",
+    path: "/v1/api/rest/users/:id",
     methods: ["GET"],
     query: `
       query GetUser($id: ID!) {
@@ -174,7 +180,7 @@ restifiedEndpoints: [
     `,
   },
   {
-    path: "/v1/rest/posts",
+    path: "/v1/api/rest/posts",
     method: ["POST"],
     query: `
       mutation CreatePost($title: String!, $content: String!) {

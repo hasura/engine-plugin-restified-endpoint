@@ -12,7 +12,7 @@ interface RawRequest {
   body: JSON | null;
 }
 
-export const restifiedHandler = (request) => {
+export const restifiedHandler = (request, graphqlServerUrl: string) => {
   return tracer.startActiveSpan("Handle request", async (span) => {
     // Authentication
     if (
@@ -58,7 +58,7 @@ export const restifiedHandler = (request) => {
 
     // Execute GraphQL query
     try {
-      const result = await executeGraphQL(endpoint.query, variables, request);
+      const result = await executeGraphQL(endpoint.query, variables, request, graphqlServerUrl);
       span.setStatus({
         code: SpanStatusCode.OK,
         message: String("Query executed successfully"),
@@ -128,8 +128,8 @@ function extractVariables(request: RawRequest, endpoint) {
   return variables;
 }
 
-async function executeGraphQL(query, variables, request) {
-  const response = await fetch(Config.graphqlServer.url, {
+async function executeGraphQL(query, variables, request, graphqlServerUrl: string) {
+  const response = await fetch(graphqlServerUrl, {
     method: "POST",
     headers: {
       ...Config.graphqlServer.headers.forward.reduce((acc, header) => {
