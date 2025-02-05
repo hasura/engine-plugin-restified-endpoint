@@ -58,7 +58,12 @@ export const restifiedHandler = (request, graphqlServerUrl: string) => {
 
     // Execute GraphQL query
     try {
-      const result = await executeGraphQL(endpoint.query, variables, request, graphqlServerUrl);
+      const result = await executeGraphQL(
+        endpoint.query,
+        variables,
+        request,
+        graphqlServerUrl,
+      );
       span.setStatus({
         code: SpanStatusCode.OK,
         message: String("Query executed successfully"),
@@ -128,7 +133,12 @@ function extractVariables(request: RawRequest, endpoint) {
   return variables;
 }
 
-async function executeGraphQL(query, variables, request, graphqlServerUrl: string) {
+async function executeGraphQL(
+  query,
+  variables,
+  request,
+  graphqlServerUrl: string,
+) {
   const response = await fetch(graphqlServerUrl, {
     method: "POST",
     headers: {
