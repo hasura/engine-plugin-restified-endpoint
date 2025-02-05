@@ -158,7 +158,7 @@ Build DDN supergraph:
 ddn supergraph build create
 ```
 
-Please update the GRAPHQL_SERVER_URL variable in the `wrangler.toml` with the projects graphql endpoint.
+Please update the GRAPHQL_SERVER_URL variable in the `wrangler.toml` with the project's graphql endpoint.
 
 **Note**: For end-to-end tracing, you would have to update the `wrangler.toml` file to add the Hasura PAT in `OTEL_EXPORTER_PAT` var.
 
