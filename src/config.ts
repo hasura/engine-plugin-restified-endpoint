@@ -4,7 +4,7 @@ export const Config = {
       additional: {
         "Content-Type": "application/json",
       },
-      forward: ["X-Hasura-Role"],
+      forward: ["X-Hasura-Role", "Authorization", "X-Hasura-ddn-token"],
     },
   },
   headers: {
