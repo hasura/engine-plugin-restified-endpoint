@@ -1,5 +1,6 @@
 import { tracer } from "../tracing/tracer";
 import { SpanStatusCode } from "@opentelemetry/api";
+import { RawRequest } from "./types";
 
 export function parseValue(value: string): any {
   try {
