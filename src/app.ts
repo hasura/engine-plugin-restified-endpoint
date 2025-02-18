@@ -94,22 +94,10 @@ app.all("/", async (req, res) => {
       span.setAttribute("request.url", req.url);
       span.setAttribute("request.method", req.method);
 
-      // Extract trace headers with type annotation
-      const traceHeaders: TraceHeaders = {};
-      propagation.inject(context.active(), traceHeaders);
-
-      // Add trace headers to the request
-      req.headers = {
-        ...req.headers,
-        ...traceHeaders,
-      };
-
       // Log request details with trace context
       span.addEvent("request.received", {
-        headers: JSON.stringify(req.headers),
         body: JSON.stringify(req.body),
         url: req.url,
-        traceContext: JSON.stringify(traceHeaders),
       });
 
       const graphqlUrl =
@@ -120,16 +108,9 @@ app.all("/", async (req, res) => {
       const response = await restifiedHandler(req, graphqlUrl);
       const responseData = await response.json();
 
-      // Add trace headers to response with type checking
-      Object.entries(traceHeaders).forEach(([key, value]: [string, string]) => {
-        res.setHeader(key, value);
-      });
-
       // Log response details
       span.addEvent("response.processed", {
         status: response.status,
-        headers: JSON.stringify(Object.fromEntries(response.headers)),
-        traceContext: JSON.stringify(traceHeaders),
       });
 
       // Send the response
