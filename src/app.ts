@@ -1,5 +1,5 @@
-import express from 'express';
-import { restifiedHandler } from './restified';
+import express from "express";
+import { restifiedHandler } from "./restified";
 
 import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
@@ -10,10 +10,10 @@ import { Resource } from "@opentelemetry/resources";
 import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
 
 import { SpanStatusCode, context, propagation } from "@opentelemetry/api";
-import { W3CTraceContextPropagator } from '@opentelemetry/core';
-import { B3Propagator, B3InjectEncoding } from '@opentelemetry/propagator-b3';
-import { CompositePropagator } from '@opentelemetry/core';
-import { tracer } from './modules/tracing/tracer';
+import { W3CTraceContextPropagator } from "@opentelemetry/core";
+import { B3Propagator, B3InjectEncoding } from "@opentelemetry/propagator-b3";
+import { CompositePropagator } from "@opentelemetry/core";
+import { tracer } from "./modules/tracing/tracer";
 
 // Add type for trace headers
 interface TraceHeaders {
@@ -26,10 +26,10 @@ propagation.setGlobalPropagator(
     propagators: [
       new W3CTraceContextPropagator(),
       new B3Propagator({
-        injectEncoding: B3InjectEncoding.MULTI_HEADER // Use multi-header B3 format
-      })
-    ]
-  })
+        injectEncoding: B3InjectEncoding.MULTI_HEADER, // Use multi-header B3 format
+      }),
+    ],
+  }),
 );
 
 const provider = new NodeTracerProvider({
@@ -39,9 +39,11 @@ const provider = new NodeTracerProvider({
 });
 
 const traceExporter = new OTLPTraceExporter({
-  url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4318/v1/traces',
+  url:
+    process.env.OTEL_EXPORTER_OTLP_ENDPOINT ||
+    "http://localhost:4318/v1/traces",
   headers: {
-    Authorization: `pat ${process.env.OTEL_EXPORTER_PAT || ''}`,
+    Authorization: `pat ${process.env.OTEL_EXPORTER_PAT || ""}`,
   },
 });
 
@@ -65,13 +67,12 @@ app.use((req, res, next) => {
 });
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-
-  return tracer.startActiveSpan('health-check', (span) => {
+app.get("/health", (req, res) => {
+  return tracer.startActiveSpan("health-check", (span) => {
     try {
-      span.setAttribute('internal.visibility', String('user'));
-      span.setAttribute('endpoint', '/health');
-      res.json({ status: 'healthy' });
+      span.setAttribute("internal.visibility", String("user"));
+      span.setAttribute("endpoint", "/health");
+      res.json({ status: "healthy" });
       span.setStatus({ code: SpanStatusCode.OK });
     } catch (error) {
       span.setStatus({
@@ -86,33 +87,34 @@ app.get('/health', (req, res) => {
 });
 
 // Main handler for all routes
-app.all('/', async (req, res) => {
-  return tracer.startActiveSpan('handle-request', async (span) => {
+app.all("/", async (req, res) => {
+  return tracer.startActiveSpan("handle-request", async (span) => {
     try {
-      span.setAttribute('internal.visibility', String('user'));
-      span.setAttribute('request.url', req.url);
-      span.setAttribute('request.method', req.method);
-      
+      span.setAttribute("internal.visibility", String("user"));
+      span.setAttribute("request.url", req.url);
+      span.setAttribute("request.method", req.method);
+
       // Extract trace headers with type annotation
       const traceHeaders: TraceHeaders = {};
       propagation.inject(context.active(), traceHeaders);
-      
+
       // Add trace headers to the request
       req.headers = {
         ...req.headers,
-        ...traceHeaders
+        ...traceHeaders,
       };
-      
+
       // Log request details with trace context
-      span.addEvent('request.received', {
+      span.addEvent("request.received", {
         headers: JSON.stringify(req.headers),
         body: JSON.stringify(req.body),
         url: req.url,
-        traceContext: JSON.stringify(traceHeaders)
+        traceContext: JSON.stringify(traceHeaders),
       });
 
-      const graphqlUrl = process.env.GRAPHQL_SERVER_URL || 'http://localhost:3000/graphql';
-      span.setAttribute('graphql.url', graphqlUrl);
+      const graphqlUrl =
+        process.env.GRAPHQL_SERVER_URL || "http://localhost:3000/graphql";
+      span.setAttribute("graphql.url", graphqlUrl);
 
       // Handle the request
       const response = await restifiedHandler(req, graphqlUrl);
@@ -124,15 +126,15 @@ app.all('/', async (req, res) => {
       });
 
       // Log response details
-      span.addEvent('response.processed', {
+      span.addEvent("response.processed", {
         status: response.status,
         headers: JSON.stringify(Object.fromEntries(response.headers)),
-        traceContext: JSON.stringify(traceHeaders)
+        traceContext: JSON.stringify(traceHeaders),
       });
 
       // Send the response
       res.status(response.status).json(responseData);
-      
+
       span.setStatus({ code: SpanStatusCode.OK });
     } catch (error) {
       span.setStatus({
@@ -141,15 +143,15 @@ app.all('/', async (req, res) => {
       });
 
       span.recordException(error);
-      span.addEvent('error.handled', {
+      span.addEvent("error.handled", {
         error: error.message,
-        stack: error.stack
+        stack: error.stack,
       });
 
-      console.error('Error handling request:', error);
+      console.error("Error handling request:", error);
       res.status(500).json({
-        message: 'Internal server error',
-        error: error.message
+        message: "Internal server error",
+        error: error.message,
       });
     } finally {
       span.end();
@@ -160,15 +162,16 @@ app.all('/', async (req, res) => {
 // Start the server if this file is run directly
 if (require.main === module) {
   app.listen(port, () => {
-    tracer.startActiveSpan('server-start', (span) => {
+    tracer.startActiveSpan("server-start", (span) => {
       try {
-        const graphqlUrl = process.env.GRAPHQL_SERVER_URL || 'http://localhost:3000/graphql';
-        span.setAttribute('server.port', port);
-        span.setAttribute('graphql.url', graphqlUrl);
-        
+        const graphqlUrl =
+          process.env.GRAPHQL_SERVER_URL || "http://localhost:3000/graphql";
+        span.setAttribute("server.port", port);
+        span.setAttribute("graphql.url", graphqlUrl);
+
         console.log(`Server is running on port ${port}`);
         console.log(`GraphQL Server URL: ${graphqlUrl}`);
-        
+
         span.setStatus({ code: SpanStatusCode.OK });
       } catch (error) {
         span.setStatus({

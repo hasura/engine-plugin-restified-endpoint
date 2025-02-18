@@ -11,10 +11,10 @@ export function parseValue(value: string): any {
 
 export function extractVariables(
   request: RawRequest,
-  endpoint: any
+  endpoint: any,
 ): Record<string, any> {
   return tracer.startActiveSpan("extractVariables", (span) => {
-    span.setAttribute('internal.visibility', String('user'));
+    span.setAttribute("internal.visibility", String("user"));
     try {
       const variables: Record<string, any> = {};
 
@@ -24,7 +24,7 @@ export function extractVariables(
 
       span.setAttribute(
         "variables.path_segments",
-        String(endpointSegments.length)
+        String(endpointSegments.length),
       );
 
       endpointSegments.forEach((segment: string, index: number) => {
@@ -52,11 +52,11 @@ export function extractVariables(
 
       span.setAttribute(
         "variables.count",
-        String(Object.keys(variables).length)
+        String(Object.keys(variables).length),
       );
       span.setAttribute(
         "variables.keys",
-        JSON.stringify(Object.keys(variables))
+        JSON.stringify(Object.keys(variables)),
       );
       span.setStatus({ code: SpanStatusCode.OK });
       return variables;

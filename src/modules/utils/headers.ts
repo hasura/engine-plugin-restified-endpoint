@@ -5,8 +5,8 @@ export function getHeader(request: any, headerName: string): string | null {
   const value =
     request.headers?.get && typeof request.headers.get === "function"
       ? request.headers.get(headerName)
-      : request.headers?.[headerName.toLowerCase()] ?? null;
-  
+      : (request.headers?.[headerName.toLowerCase()] ?? null);
+
   return value;
 }
 

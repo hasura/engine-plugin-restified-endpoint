@@ -12,16 +12,16 @@ export async function executeGraphQL(
   query: string,
   variables: any,
   request: any,
-  graphqlServerUrl: string
+  graphqlServerUrl: string,
 ): Promise<GraphQLResponse> {
   return tracer.startActiveSpan("executeGraphQL", async (span) => {
-    span.setAttribute('internal.visibility', String('user'));
+    span.setAttribute("internal.visibility", String("user"));
     try {
       span.setAttribute("graphql.server_url", graphqlServerUrl);
       span.setAttribute("graphql.query_length", String(query.length));
       span.setAttribute(
         "graphql.variables_count",
-        String(Object.keys(variables).length)
+        String(Object.keys(variables).length),
       );
 
       // Get the current trace context and inject it into headers
@@ -33,12 +33,12 @@ export async function executeGraphQL(
           if (value) acc[header] = value;
           return acc;
         },
-        {}
+        {},
       );
 
       span.setAttribute(
         "headers.forwarded_count",
-        String(Object.keys(forwardedHeaders).length)
+        String(Object.keys(forwardedHeaders).length),
       );
 
       const response = await fetch(graphqlServerUrl, {
@@ -55,7 +55,7 @@ export async function executeGraphQL(
 
       if (!response.ok) {
         throw new Error(
-          `GraphQL request failed: ${response.status} ${response.statusText}`
+          `GraphQL request failed: ${response.status} ${response.statusText}`,
         );
       }
 

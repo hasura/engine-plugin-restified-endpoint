@@ -4,7 +4,7 @@ import { tracer } from "../tracing/tracer";
 // Path matching
 export function matchPath(pattern: string, path: string): boolean {
   return tracer.startActiveSpan("matchPath", (span) => {
-    span.setAttribute('internal.visibility', String('user'));
+    span.setAttribute("internal.visibility", String("user"));
     try {
       span.setAttribute("path.pattern", pattern);
       span.setAttribute("path.actual", path);
