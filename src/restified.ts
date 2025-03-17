@@ -33,7 +33,8 @@ export const restifiedHandler = (
       authSpan.setStatus({ code: SpanStatusCode.OK });
       authSpan.end();
 
-      // Parse request
+      // Parse request body
+      // {"path":"/v1/rest/users/5" ,"method":"GET","query":"limit=10&offset=0"}
       const requestBody = await parseRequestBody(request);
       if (!requestBody?.path || !requestBody?.method) {
         return createResponse(

@@ -2,6 +2,8 @@ import { SpanStatusCode } from "@opentelemetry/api";
 import { tracer } from "../tracing/tracer";
 
 // Path matching
+// This function should return true if the path matches the endpoint path template
+// This should handle route patterns (e.g., /v1/users/:id)
 export function matchPath(pattern: string, path: string): boolean {
   return tracer.startActiveSpan("matchPath", (span) => {
     span.setAttribute("internal.visibility", String("user"));

@@ -10,6 +10,14 @@ export function parseValue(value: string): any {
   }
 }
 
+// This should handle route patterns, query parameters, and request body
+// We can have two types of variables in the request (which is GET for now):
+// 1. Path parameters (e.g., /v1/users/:id)
+// 2. Query parameters (e.g., /v1/users?id=1)
+// We can have both as well
+
+// our request looks something like:
+// {"path":"/v1/users/1","method":"GET","query":"foo=bar&hello=world"}
 export function extractVariables(
   request: RawRequest,
   endpoint: any,
@@ -20,8 +28,9 @@ export function extractVariables(
       const variables: Record<string, any> = {};
 
       // Path parameters
-      const endpointSegments = endpoint.path.split("/");
-      const requestSegments = request.path.split("/");
+      // Split the endpoint path and request path into segments
+      const endpointSegments = endpoint.path.split("/"); // /v1/users/:id
+      const requestSegments = request.path.split("/"); // /v1/users/1
 
       span.setAttribute(
         "variables.path_segments",
