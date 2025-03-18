@@ -8,13 +8,31 @@
     "start": "wrangler dev",
     "typecheck": "tsc --noEmit --skipLibCheck",
     "lint": "npx --yes prettier --check .",
-    "format": "npx --yes prettier --write ."
+    "format": "npx --yes prettier --write .",
+    "build": "tsc",
+    "serve": "NODE_PATH=./dist node dist/app.js",
+    "serve-dev": "nodemon src/app.ts"
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.17.19",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
     "wrangler": "^3.71.0"
   },
   "dependencies": {
     "@microlabs/otel-cf-workers": "^1.0.0-rc.43",
-    "@opentelemetry/api": "^1.6.0"
+    "@opentelemetry/api": "1.6.0",
+    "@opentelemetry/core": "1.17.0",
+    "@opentelemetry/instrumentation": "0.43.0",
+    "@opentelemetry/instrumentation-http": "0.43.0",
+    "@opentelemetry/propagator-b3": "1.17.0",
+    "@opentelemetry/resources": "1.17.0",
+    "@opentelemetry/sdk-trace-base": "1.17.0",
+    "@opentelemetry/sdk-trace-node": "1.17.0",
+    "@opentelemetry/semantic-conventions": "1.17.0",
+    "express": "^4.21.1",
+    "serverless-http": "^3.2.0"
   }
 }
