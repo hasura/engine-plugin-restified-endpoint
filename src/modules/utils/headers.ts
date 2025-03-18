@@ -1,4 +1,5 @@
 import { context, propagation } from "@opentelemetry/api";
+import { Request } from 'express';
 
 // Header handling
 export function getHeader(request: any, headerName: string): string | null {

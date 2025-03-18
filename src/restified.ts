@@ -7,10 +7,11 @@ import { matchPath } from "./modules/utils/path";
 import { getHeader } from "./modules/utils/headers";
 import { parseRequestBody } from "./modules/utils/request";
 import { tracer } from "./modules/tracing/tracer";
+import { Request } from "express";
 
 // Main handler
 export const restifiedHandler = (
-  request: Request | any,
+  request: Request,
   graphqlServerUrl: string,
 ) => {
   return tracer.startActiveSpan("restifiedHandler", async (parentSpan) => {
