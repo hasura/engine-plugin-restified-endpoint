@@ -1,8 +1,9 @@
 import { SpanStatusCode } from "@opentelemetry/api";
 import { tracer } from "../tracing/tracer";
+import { RawRequest } from "./types";
 
 // Request parsing
-export async function parseRequestBody(request: Request | any): Promise<any> {
+export async function parseRequestBody(request: Request): Promise<RawRequest> {
   return tracer.startActiveSpan("parseRequestBody", async (span) => {
     span.setAttribute("internal.visibility", String("user"));
     try {
