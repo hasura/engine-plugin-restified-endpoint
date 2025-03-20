@@ -103,7 +103,9 @@ app.all("/", async (req, res) => {
 
       const configPath = process.env.HASURA_DDN_PLUGIN_CONFIG_PATH;
 
-      const configInput = configPath ? require(`${configPath}/configuration.json`) : undefined;
+      const configInput = configPath
+        ? require(`${configPath}/configuration.json`)
+        : undefined;
 
       // parse config or explode
       // TODO:: pretty print parsing error on failure: https://zod.dev/ERROR_HANDLING?id=formatting-errors

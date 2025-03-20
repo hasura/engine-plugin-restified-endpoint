@@ -66,7 +66,7 @@ services:
         condition: service_healthy
 
   datasource:
-    build: 
+    build:
       context: ./build/postgres
     ports:
       - 5432:5432
