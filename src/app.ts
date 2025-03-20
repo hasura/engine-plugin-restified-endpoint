@@ -14,7 +14,7 @@ import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import { B3Propagator, B3InjectEncoding } from "@opentelemetry/propagator-b3";
 import { CompositePropagator } from "@opentelemetry/core";
 import { tracer } from "./modules/tracing/tracer";
-import { configSchema } from "./config";
+import { configSchema } from "./modules/utils/types";
 
 // Add type for trace headers
 interface TraceHeaders {

@@ -1,4 +1,4 @@
-import { Config } from "./config";
+import { Config } from "./modules/utils/types";
 import { SpanStatusCode } from "@opentelemetry/api";
 import { executeGraphQL } from "./modules/graphql/client";
 import { createResponse } from "./modules/utils/response";
