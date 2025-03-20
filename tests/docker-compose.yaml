@@ -47,7 +47,7 @@ services:
         condition: service_started
 
   connector:
-    image: us-docker.pkg.dev/hasura-ddn/ddn/ndc-postgres:dev-main
+    image: ghcr.io/hasura/ndc-postgres:dev-main
     ports:
       - 8080
     environment:
