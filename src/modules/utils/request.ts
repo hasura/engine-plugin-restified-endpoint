@@ -1,7 +1,7 @@
 import { SpanStatusCode } from "@opentelemetry/api";
 import { tracer } from "../tracing/tracer";
 import { RawRequest } from "./types";
-import { Request } from 'express';
+import { Request } from "express";
 
 // Request parsing
 export async function parseRequestBody(request: Request): Promise<RawRequest> {
@@ -9,7 +9,7 @@ export async function parseRequestBody(request: Request): Promise<RawRequest> {
     span.setAttribute("internal.visibility", String("user"));
     try {
       const body = request.body;
-/*        typeof request.json === "function"
+      /*        typeof request.json === "function"
           ? await request.json()
           : request.body; */
       span.setAttribute("request.hasBody", String(!!body));

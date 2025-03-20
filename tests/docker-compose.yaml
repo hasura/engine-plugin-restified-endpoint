@@ -4,6 +4,9 @@ services:
       context: ..
     ports:
       - 8787:8787
+    environment:
+      OTEL_SERVICE_NAME: "plugin"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://jaeger:4317"
 
   # A sample DDN project that uses the plugin to cache requests. Running
   # `docker compose up engine plugin` will give you a working GraphiQL

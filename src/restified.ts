@@ -13,7 +13,7 @@ import { Request } from "express";
 export const restifiedHandler = (
   request: Request,
   graphqlServerUrl: string,
-  config:Config
+  config: Config,
 ) => {
   return tracer.startActiveSpan("restifiedHandler", async (parentSpan) => {
     parentSpan.setAttribute("internal.visibility", String("user"));

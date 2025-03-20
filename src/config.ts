@@ -7,27 +7,27 @@ export const method = z.enum(["GET", "POST", "PUT", "DELETE"]);
 export type Method = z.infer<typeof method>;
 
 const endpointSchema = z.object({
-    path: z.string(),
-    methods: z.array(method),
-    query: z.string(),
-  })
+  path: z.string(),
+  methods: z.array(method),
+  query: z.string(),
+});
 
 export type Endpoint = z.infer<typeof endpointSchema>;
 
 export const configSchema = z.object({
-  graphqlServer: z.object({ 
+  graphqlServer: z.object({
     headers: z.object({
-      additional: z.record(z.string(),z.string()),
+      additional: z.record(z.string(), z.string()),
       forward: z.array(z.string()),
     }),
   }),
-  headers: z.record(z.string(),z.string()),
-  restifiedEndpoints: z.array(endpointSchema)
+  headers: z.record(z.string(), z.string()),
+  restifiedEndpoints: z.array(endpointSchema),
 });
 
-// This configuration is used to configure the plugin when it is used 
+// This configuration is used to configure the plugin when it is used
 // in development with Wrangler
-export const config:Config = {
+export const config: Config = {
   graphqlServer: {
     headers: {
       additional: {
@@ -54,5 +54,3 @@ export const config:Config = {
     // Add more RESTified endpoints here
   ],
 };
-
-

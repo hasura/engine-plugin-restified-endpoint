@@ -60,24 +60,24 @@
           "definition": {
             "name": "restified_endpoints",
             "url": {
-              "value": "http://plugin:8787/pre-route"
+              "value": "http://plugin:8787"
             },
             "pre": "route",
             "config": {
-              "matchPath": "/v1",
-              "matchMethods": ["GET","POST"],
+              "matchPath": "/v1/api/rest/*",
+              "matchMethods": ["GET", "POST"],
               "request": {
-                "method":"GET",
+                "method": "GET",
                 "headers": {
                   "additional": {
                     "hasura-m-auth": {
-                           "value": "zZkhKqFjqXR4g5MZCsJUZCnhCcoPyZ"
-
+                      "value": "zZkhKqFjqXR4g5MZCsJUZCnhCcoPyZ"
                     }
                   },
                   "forward": [
                     "Authorization",
-                    "X-Hasura-Role"
+                    "x-hasura-role",
+                    "x-hasura-ddn-token"
                   ]
                 },
                 "rawRequest": {
@@ -89,7 +89,7 @@
             }
           }
         },
-      
+
         {
           "definition": {
             "name": "db",

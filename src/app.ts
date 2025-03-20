@@ -101,7 +101,7 @@ app.all("/", async (req, res) => {
         url: req.url,
       });
 
-      const configPath =  process.env.CONFIG_PATH;
+      const configPath = process.env.CONFIG_PATH;
 
       const configInput = configPath ? require(configPath) : undefined;
 
