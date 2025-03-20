@@ -182,7 +182,6 @@ definition:
         forward:
           - Authorization
           - X-Hasura-Role
-      session: {}
       rawRequest:
         path: {}
         query: {}

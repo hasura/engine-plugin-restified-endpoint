@@ -1,0 +1,77 @@
+services:
+  plugin:
+    build:
+      context: ..
+    ports:
+      - 8787:8787
+
+  # A sample DDN project that uses the plugin to cache requests. Running
+  # `docker compose up engine plugin` will give you a working GraphiQL
+  # interface at `localhost:8081` to explore.
+
+  engine:
+    image: ghcr.io/hasura/v3-engine:dev-main
+    platform: linux/amd64
+    init: true
+    ports:
+      - 8081:3000
+    environment:
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://jaeger:4317"
+      OTEL_SERVICE_NAME: "engine"
+      RUST_LOG: "DEBUG"
+    volumes:
+      - type: bind
+        source: ./static/auth_config.json
+        target: /auth_config.json
+      - type: bind
+        source: ./static/engine-metadata.json
+        target: /engine-metadata.json
+        read_only: true
+    command:
+      - --metadata-path=/engine-metadata.json
+      - --authn-config-path=/auth_config.json
+    depends_on:
+      connector:
+        condition: service_started
+      jaeger:
+        condition: service_started
+
+  connector:
+    image: us-docker.pkg.dev/hasura-ddn/ddn/ndc-postgres:dev-main
+    ports:
+      - 8080
+    environment:
+      OTEL_SERVICE_NAME: "postgres-connector"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://jaeger:4317"
+      CONNECTION_URI: "postgresql://postgres:password@datasource/chinook"
+    volumes:
+      - type: bind
+        source: ./static/connector-metadata
+        target: /etc/connector
+        read_only: true
+    depends_on:
+      jaeger:
+        condition: service_started
+      datasource:
+        condition: service_healthy
+
+  datasource:
+    build: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: "password"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.56
+    restart: always
+    ports:
+      - 4003:16686
+      - 4318:4318
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
