@@ -25,10 +25,10 @@ Documentation can be found [here](https://hasura.io/docs/3.0/plugins/restified-e
    - Executes the corresponding GraphQL query with the extracted variables
    - Returns the GraphQL response as a REST-style JSON response
 
-
 ## Configuration
 
 Configure the graphql server URL in `.dev.vars`:
+
 ```toml
 [vars]
 GRAPHQL_SERVER_URL = "<GRAPHQL_SERVER_URL>"
