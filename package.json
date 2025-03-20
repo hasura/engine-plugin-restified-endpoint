@@ -12,14 +12,19 @@
     "format": "npx --yes prettier --write .",
     "build": "tsc",
     "serve": "NODE_PATH=./dist node dist/app.js",
-    "serve-dev": "nodemon src/app.ts"
+    "serve-dev": "nodemon src/app.ts",
+    "test": "jest",
+    "test:update": "jest --updateSnapshot"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.14",
     "@types/node": "^20.17.19",
+    "jest": "^29.7.0",
     "nodemon": "^3.1.9",
+    "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3",
+    "typescript": "^5.8.2",
     "wrangler": "^3.71.0"
   },
   "dependencies": {
