@@ -55,7 +55,7 @@ export async function executeGraphQL(
 
       if (!response.ok) {
         throw new Error(
-          `GraphQL request failed: ${response.status} ${response.statusText}`,
+          `GraphQL request to ${graphqlServerUrl} failed: ${response.status} ${response.statusText}`,
         );
       }
 

@@ -1,0 +1,25 @@
+{
+  "graphqlServer": {
+    "headers": {
+      "additional": {
+        "Content-Type": "application/json"
+      },
+      "forward": ["X-Hasura-Role", "Authorization", "X-Hasura-ddn-token"]
+    }
+  },
+  "headers": {
+    "hasura-m-auth": "zZkhKqFjqXR4g5MZCsJUZCnhCcoPyZ"
+  },
+  "restifiedEndpoints": [
+    {
+      "path": "/v1/api/rest/artistbyname/:name",
+      "methods": ["GET", "POST"],
+      "query": "query artistByName($name: String!) { artist(where: {name: {_eq: $name}}) { name }}"
+    },
+    {
+      "path": "/v1/api/rest/artists",
+      "methods": ["GET", "POST"],
+      "query": "query artists($limit: Int = 10, $offset: Int = 0) { artist(limit: $limit, offset: $offset) { name } }"
+    }
+  ]
+}

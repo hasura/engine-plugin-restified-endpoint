@@ -6,7 +6,14 @@ services:
       - 8787:8787
     environment:
       OTEL_SERVICE_NAME: "plugin"
-      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://jaeger:4317"
+      HASURA_DDN_PLUGIN_CONFIG_PATH: "/config"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://jaeger:4317"
+      GRAPHQL_SERVER_URL: "http://engine:3000/graphql"
+    volumes:
+      - type: bind
+        source: ./config/plugin/
+        target: /config/
+        read_only: true
 
   # A sample DDN project that uses the plugin to cache requests. Running
   # `docker compose up engine plugin` will give you a working GraphiQL
@@ -24,10 +31,10 @@ services:
       RUST_LOG: "DEBUG"
     volumes:
       - type: bind
-        source: ./static/auth_config.json
+        source: ./config/v3-engine/auth_config.json
         target: /auth_config.json
       - type: bind
-        source: ./static/engine-metadata.json
+        source: ./config/v3-engine/engine-metadata.json
         target: /engine-metadata.json
         read_only: true
     command:
@@ -49,7 +56,7 @@ services:
       CONNECTION_URI: "postgresql://postgres:password@datasource/chinook"
     volumes:
       - type: bind
-        source: ./static/connector-metadata
+        source: ./config/ndc-postgres
         target: /etc/connector
         read_only: true
     depends_on:
@@ -59,7 +66,8 @@ services:
         condition: service_healthy
 
   datasource:
-    build: postgres
+    build: 
+      context: ./build/postgres
     ports:
       - 5432:5432
     environment:

@@ -101,15 +101,20 @@ app.all("/", async (req, res) => {
         url: req.url,
       });
 
-      const configPath = process.env.CONFIG_PATH;
+      const configPath = process.env.HASURA_DDN_PLUGIN_CONFIG_PATH;
 
-      const configInput = configPath ? require(configPath) : undefined;
+      console.log({configPath});
+
+      const configInput = configPath ? require(`${configPath}/configuration.json`) : undefined;
+
+      console.log({configInput});
 
       // parse config or explode
       const parsedConfig = configSchema.parse(configInput);
 
       const graphqlUrl =
         process.env.GRAPHQL_SERVER_URL || "http://localhost:3000/graphql";
+
       span.setAttribute("graphql.url", graphqlUrl);
 
       // Handle the request

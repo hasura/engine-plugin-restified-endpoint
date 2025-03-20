@@ -67,7 +67,7 @@
               "matchPath": "/v1/api/rest/*",
               "matchMethods": ["GET", "POST"],
               "request": {
-                "method": "GET",
+                "method": "POST",
                 "headers": {
                   "additional": {
                     "hasura-m-auth": {
