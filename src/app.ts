@@ -14,6 +14,7 @@ import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import { B3Propagator, B3InjectEncoding } from "@opentelemetry/propagator-b3";
 import { CompositePropagator } from "@opentelemetry/core";
 import { tracer } from "./modules/tracing/tracer";
+import { configSchema } from "./config";
 
 // Add type for trace headers
 interface TraceHeaders {
@@ -100,12 +101,19 @@ app.all("/", async (req, res) => {
         url: req.url,
       });
 
+      const configPath =  process.env.CONFIG_PATH;
+
+      const configInput = configPath ? require(configPath) : undefined;
+
+      // parse config or explode
+      const parsedConfig = configSchema.parse(configInput);
+
       const graphqlUrl =
         process.env.GRAPHQL_SERVER_URL || "http://localhost:3000/graphql";
       span.setAttribute("graphql.url", graphqlUrl);
 
       // Handle the request
-      const response = await restifiedHandler(req, graphqlUrl);
+      const response = await restifiedHandler(req, graphqlUrl, parsedConfig);
       const responseData = await response.json();
 
       // Log response details

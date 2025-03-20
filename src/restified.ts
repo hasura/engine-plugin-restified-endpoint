@@ -1,4 +1,4 @@
-import { config } from "./config";
+import { Config } from "./config";
 import { SpanStatusCode } from "@opentelemetry/api";
 import { executeGraphQL } from "./modules/graphql/client";
 import { createResponse } from "./modules/utils/response";
@@ -13,6 +13,7 @@ import { Request } from "express";
 export const restifiedHandler = (
   request: Request,
   graphqlServerUrl: string,
+  config:Config
 ) => {
   return tracer.startActiveSpan("restifiedHandler", async (parentSpan) => {
     parentSpan.setAttribute("internal.visibility", String("user"));

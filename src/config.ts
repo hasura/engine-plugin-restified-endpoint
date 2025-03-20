@@ -14,7 +14,7 @@ const endpointSchema = z.object({
 
 export type Endpoint = z.infer<typeof endpointSchema>;
 
-const configSchema = z.object({
+export const configSchema = z.object({
   graphqlServer: z.object({ 
     headers: z.object({
       additional: z.record(z.string(),z.string()),
