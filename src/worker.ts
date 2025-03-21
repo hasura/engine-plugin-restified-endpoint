@@ -11,12 +11,13 @@
 import { trace } from "@opentelemetry/api";
 import { restifiedHandler } from "./restified";
 import { instrument, ResolveConfigFn } from "@microlabs/otel-cf-workers";
+import { config } from "./config";
 
 const handler = {
   async fetch(request, env, ctx) {
     trace.getActiveSpan()?.setAttribute("internal.visibility", String("user"));
     const graphqlServerUrl = env.GRAPHQL_SERVER_URL;
-    return restifiedHandler(request, graphqlServerUrl);
+    return restifiedHandler(request, graphqlServerUrl, config);
   },
 };
 

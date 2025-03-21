@@ -1,4 +1,4 @@
-import { Config } from "./config";
+import { Config } from "./modules/utils/types";
 import { SpanStatusCode } from "@opentelemetry/api";
 import { executeGraphQL } from "./modules/graphql/client";
 import { createResponse } from "./modules/utils/response";
@@ -7,11 +7,13 @@ import { matchPath } from "./modules/utils/path";
 import { getHeader } from "./modules/utils/headers";
 import { parseRequestBody } from "./modules/utils/request";
 import { tracer } from "./modules/tracing/tracer";
+import { Request } from "express";
 
 // Main handler
 export const restifiedHandler = (
-  request: Request | any,
+  request: Request,
   graphqlServerUrl: string,
+  config: Config,
 ) => {
   return tracer.startActiveSpan("restifiedHandler", async (parentSpan) => {
     parentSpan.setAttribute("internal.visibility", String("user"));
@@ -22,7 +24,7 @@ export const restifiedHandler = (
       // Authentication
       const authSpan = tracer.startSpan("authentication");
       const authHeader = getHeader(request, "hasura-m-auth");
-      if (!authHeader || authHeader !== Config.headers["hasura-m-auth"]) {
+      if (!authHeader || authHeader !== config.headers["hasura-m-auth"]) {
         authSpan.setStatus({
           code: SpanStatusCode.ERROR,
           message: String("Unauthorized request!"),
@@ -35,8 +37,8 @@ export const restifiedHandler = (
 
       // Parse request body
       // {"path":"/v1/rest/users/5" ,"method":"GET","query":"limit=10&offset=0"}
-      const requestBody = await parseRequestBody(request);
-      if (!requestBody?.path || !requestBody?.method) {
+      const rawRequest = await parseRequestBody(request);
+      if (!rawRequest?.path || !rawRequest?.method) {
         return createResponse(
           {
             message: "Invalid request body",
@@ -51,14 +53,14 @@ export const restifiedHandler = (
         );
       }
 
-      parentSpan.setAttribute("request.path", requestBody.path);
-      parentSpan.setAttribute("request.body_method", requestBody.method);
+      parentSpan.setAttribute("request.path", rawRequest.path);
+      parentSpan.setAttribute("request.body_method", rawRequest.method);
 
       // Find matching endpoint
-      const endpoint = Config.restifiedEndpoints.find(
+      const endpoint = config.restifiedEndpoints.find(
         (e) =>
-          matchPath(e.path, requestBody.path) &&
-          e.methods.includes(requestBody.method),
+          matchPath(e.path, rawRequest.path) &&
+          e.methods.includes(rawRequest.method),
       );
 
       if (!endpoint) {
@@ -69,18 +71,18 @@ export const restifiedHandler = (
         return createResponse(
           {
             message: "Endpoint not found",
-            requestedPath: requestBody.path,
-            requestedMethod: requestBody.method,
+            requestedPath: rawRequest.path,
+            requestedMethod: rawRequest.method,
           },
           404,
         );
       }
 
       parentSpan.setAttribute("endpoint.path", endpoint.path);
-      parentSpan.setAttribute("endpoint.method", requestBody.method);
+      parentSpan.setAttribute("endpoint.method", rawRequest.method);
 
       // Execute query
-      const variables = extractVariables(requestBody, endpoint);
+      const variables = extractVariables(rawRequest, endpoint);
       const result = await executeGraphQL(
         endpoint.query,
         variables,

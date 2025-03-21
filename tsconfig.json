@@ -7,7 +7,7 @@
     "strict": false,
     "allowJs": true,
     "outDir": "dist",
-    "types": ["node"],
+    "types": ["node", "jest"],
     "skipLibCheck": true
   },
   "include": ["src"]
