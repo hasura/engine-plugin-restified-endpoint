@@ -8,10 +8,10 @@ export async function parseRequestBody(request: Request): Promise<RawRequest> {
   return tracer.startActiveSpan("parseRequestBody", async (span) => {
     span.setAttribute("internal.visibility", String("user"));
     try {
-      const body = request.body;
-      /*        typeof request.json === "function"
-          ? await request.json()
-          : request.body; */
+      const body =
+        typeof (request as any).json === "function"
+          ? await (request as any).json()
+          : request.body;
       span.setAttribute("request.hasBody", String(!!body));
       span.setStatus({ code: SpanStatusCode.OK });
       return body;
