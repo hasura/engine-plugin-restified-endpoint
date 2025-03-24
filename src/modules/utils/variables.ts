@@ -1,8 +1,8 @@
 import { tracer } from "../tracing/tracer";
 import { SpanStatusCode } from "@opentelemetry/api";
-import { RawRequest } from "./types";
+import { Endpoint, RawRequest } from "./types";
 
-export function parseValue(value: string): any {
+export function parseValue(value: string): unknown {
   try {
     return JSON.parse(value);
   } catch {
@@ -20,12 +20,12 @@ export function parseValue(value: string): any {
 // {"path":"/v1/users/1","method":"GET","query":"foo=bar&hello=world"}
 export function extractVariables(
   request: RawRequest,
-  endpoint: any,
-): Record<string, any> {
+  endpoint: Endpoint,
+): Record<string, unknown> {
   return tracer.startActiveSpan("extractVariables", (span) => {
     span.setAttribute("internal.visibility", String("user"));
     try {
-      const variables: Record<string, any> = {};
+      const variables: Record<string, unknown> = {};
 
       // Path parameters
       // Split the endpoint path and request path into segments

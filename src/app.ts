@@ -14,6 +14,8 @@ import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import { B3Propagator, B3InjectEncoding } from "@opentelemetry/propagator-b3";
 import { CompositePropagator } from "@opentelemetry/core";
 import { tracer } from "./modules/tracing/tracer";
+import { configSchema } from "./modules/utils/types";
+import { Config } from "./modules/utils/types";
 
 // Add type for trace headers
 interface TraceHeaders {
@@ -86,8 +88,21 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Main handler for all routes
-app.all("/", async (req, res) => {
+function getConfig(): Config {
+  const configPath = process.env.HASURA_DDN_PLUGIN_CONFIG_PATH;
+
+  const configInput = configPath
+    ? require(`${configPath}/configuration.json`)
+    : undefined;
+
+  // parse config or explode
+  // https://zod.dev/ERROR_HANDLING?id=formatting-errors
+  const parsedConfig = configSchema.parse(configInput);
+
+  return parsedConfig;
+}
+
+const routeHandler = (config: Config) => async (req, res) => {
   return tracer.startActiveSpan("handle-request", async (span) => {
     try {
       span.setAttribute("internal.visibility", String("user"));
@@ -102,10 +117,11 @@ app.all("/", async (req, res) => {
 
       const graphqlUrl =
         process.env.GRAPHQL_SERVER_URL || "http://localhost:3000/graphql";
+
       span.setAttribute("graphql.url", graphqlUrl);
 
       // Handle the request
-      const response = await restifiedHandler(req, graphqlUrl);
+      const response = await restifiedHandler(req, graphqlUrl, config);
       const responseData = await response.json();
 
       // Log response details
@@ -138,7 +154,10 @@ app.all("/", async (req, res) => {
       span.end();
     }
   });
-});
+};
+
+// Main handler for all routes
+app.all("/", routeHandler(getConfig()));
 
 // Start the server if this file is run directly
 if (require.main === module) {

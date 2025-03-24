@@ -1,4 +1,8 @@
-export const Config = {
+import { Config } from "./modules/utils/types";
+
+// This configuration is used to configure the plugin when it is used
+// in development with Wrangler
+export const config: Config = {
   graphqlServer: {
     headers: {
       additional: {

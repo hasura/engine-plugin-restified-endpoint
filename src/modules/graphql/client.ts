@@ -1,17 +1,17 @@
 import { tracer } from "../tracing/tracer";
 import { SpanStatusCode } from "@opentelemetry/api";
 import { getHeader, injectTraceHeaders } from "../utils/headers";
-import { Config } from "../../config";
+import { config } from "../../config";
 
 interface GraphQLResponse {
-  data?: any;
+  data?: unknown;
   errors?: Array<{ message: string }>;
 }
 
 export async function executeGraphQL(
   query: string,
-  variables: any,
-  request: any,
+  variables: unknown,
+  request: unknown,
   graphqlServerUrl: string,
 ): Promise<GraphQLResponse> {
   return tracer.startActiveSpan("executeGraphQL", async (span) => {
@@ -27,7 +27,7 @@ export async function executeGraphQL(
       // Get the current trace context and inject it into headers
       const traceHeaders = injectTraceHeaders();
 
-      const forwardedHeaders = Config.graphqlServer.headers.forward.reduce(
+      const forwardedHeaders = config.graphqlServer.headers.forward.reduce(
         (acc: Record<string, string>, header: string) => {
           const value = getHeader(request, header);
           if (value) acc[header] = value;
@@ -46,7 +46,7 @@ export async function executeGraphQL(
         headers: {
           ...traceHeaders,
           ...forwardedHeaders,
-          ...Config.graphqlServer.headers.additional,
+          ...config.graphqlServer.headers.additional,
         },
         body: JSON.stringify({ query, variables }),
       });
@@ -55,7 +55,7 @@ export async function executeGraphQL(
 
       if (!response.ok) {
         throw new Error(
-          `GraphQL request failed: ${response.status} ${response.statusText}`,
+          `GraphQL request to ${graphqlServerUrl} failed: ${response.status} ${response.statusText}`,
         );
       }
 
