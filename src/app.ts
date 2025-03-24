@@ -100,7 +100,7 @@ function getConfig(): Config {
   const parsedConfig = configSchema.parse(configInput);
 
   return parsedConfig;
-};
+}
 
 const routeHandler = (config: Config) => async (req, res) => {
   return tracer.startActiveSpan("handle-request", async (span) => {
@@ -155,7 +155,6 @@ const routeHandler = (config: Config) => async (req, res) => {
     }
   });
 };
-
 
 // Main handler for all routes
 app.all("/", routeHandler(getConfig()));
