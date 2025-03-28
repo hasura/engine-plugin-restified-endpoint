@@ -8,6 +8,9 @@ prefer REST APIs.
 
 Documentation can be found [here](https://hasura.io/docs/3.0/plugins/restified-endpoints/).
 
+If you want to quickly get started with the plugin in a Hasura DDN project, check out the [quickstart
+guide](https://hasura.io/docs/3.0/plugins/restified-endpoints/how-to).
+
 ## Features
 
 - Transform GraphQL queries into REST-like endpoints
@@ -25,7 +28,47 @@ Documentation can be found [here](https://hasura.io/docs/3.0/plugins/restified-e
    - Executes the corresponding GraphQL query with the extracted variables
    - Returns the GraphQL response as a REST-style JSON response
 
-## Configuration
+## Development (Express)
+
+To run the plugin locally using Express, you can use the following steps:
+
+1. Install dependencies:
+
+   ```sh
+   npm install
+   ```
+
+2. Build the project:
+
+   ```sh
+   npm run build
+   ```
+
+3. Export the environment variables:
+
+   ```sh
+   export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318/v1/traces"
+   export OTEL_EXPORTER_PAT="your-pat-here"
+   export GRAPHQL_SERVER_URL="http://localhost:3280/graphql"
+   export HASURA_DDN_PLUGIN_CONFIG_PATH="../tests/config/plugin"
+   ```
+
+4. Start the server:
+
+   ```sh
+   npm run serve
+   ```
+
+The above command will start a local server that listens for incoming requests. The server runs on port 8787 by default.
+
+**Note:** You can also use `npm run serve-dev` to start the server in development mode, which will automatically restart
+the server when changes are made to the code.
+
+## Development (Cloudflare wrangler)
+
+This plugin can be developed and deployed using Cloudflare wrangler.
+
+### Configuration
 
 Configure the graphql server URL in `.dev.vars`:
 
@@ -33,10 +76,6 @@ Configure the graphql server URL in `.dev.vars`:
 [vars]
 GRAPHQL_SERVER_URL = "<GRAPHQL_SERVER_URL>"
 ```
-
-## Development (Cloudflare wrangler)
-
-This plugin can be developed and deployed using Cloudflare wrangler.
 
 ### Local development
 
@@ -91,37 +130,21 @@ For cloud deployment, you can use the following steps in addition to the local d
 The above command should deploy the RESTified endpoints plugin (as a lambda) using Cloudflare workers. The URL of the
 deployed plugin will be displayed in the terminal.
 
-## Development (Express)
+## Testing
 
-To run the plugin locally using Express, you can use the following steps:
+To run the tests, use the following commands:
 
-1. Install dependencies:
-
-   ```sh
-   npm install
-   ```
-
-2. Build the project:
+1. Start the services required for testing:
 
    ```sh
-   npm run build
+   docker compose -f tests/docker-compose.yaml up
    ```
 
-3. Export the environment variables:
+2. Run the tests:
 
    ```sh
-   export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318/v1/traces"
-   export OTEL_EXPORTER_PAT="your-pat-here"
-   export GRAPHQL_SERVER_URL="http://localhost:3280/graphql"
+   npm test
    ```
-
-4. Start the server:
-
-   ```sh
-   npm run serve
-   ```
-
-The above command will start a local server that listens for incoming requests. The server runs on port 8787 by default.
 
 ## Limitations and Future Improvements
 
