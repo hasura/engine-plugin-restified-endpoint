@@ -23,8 +23,10 @@ export const restifiedHandler = (
 
       // Authentication
       const authSpan = tracer.startSpan("authentication");
+      const hasuraMAuth = process.env.HASURA_M_AUTH || config.headers["hasura-m-auth"];
       const authHeader = getHeader(request, "hasura-m-auth");
-      if (!authHeader || authHeader !== config.headers["hasura-m-auth"]) {
+
+      if (hasuraMAuth && authHeader !== hasuraMAuth) {
         authSpan.setStatus({
           code: SpanStatusCode.ERROR,
           message: String("Unauthorized request!"),
@@ -32,6 +34,7 @@ export const restifiedHandler = (
         authSpan.end();
         return createResponse({ message: "unauthorized request" }, 401);
       }
+      
       authSpan.setStatus({ code: SpanStatusCode.OK });
       authSpan.end();
 

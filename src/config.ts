@@ -12,6 +12,8 @@ export const config: Config = {
     },
   },
   headers: {
+    // set the auth header explicitly or use the HASURA_M_AUTH environment variable.
+    // the env variable is highest priority
     "hasura-m-auth": "zZkhKqFjqXR4g5MZCsJUZCcoPyZ",
   },
   restifiedEndpoints: [
