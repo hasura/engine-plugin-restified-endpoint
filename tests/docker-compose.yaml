@@ -1,8 +1,8 @@
 services:
   plugin:
-    image: ghcr.io/hasura/engine-plugin-restified-endpoint:v0.0.1
-    # build:
-    #   context: ..
+    # image: ghcr.io/hasura/engine-plugin-restified-endpoint:latest
+    build:
+      context: ..
     ports:
       - 8787:8787
     environment:
