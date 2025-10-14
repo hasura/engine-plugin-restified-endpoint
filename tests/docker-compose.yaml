@@ -10,6 +10,7 @@ services:
       HASURA_DDN_PLUGIN_CONFIG_PATH: "/config"
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://jaeger:4317"
       GRAPHQL_SERVER_URL: "http://engine:3000/graphql"
+      HASURA_M_AUTH: zZkhKqFjqXR4g5MZCsJUZCnhCcoPyZ
     volumes:
       - type: bind
         source: ./config/plugin/

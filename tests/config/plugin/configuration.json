@@ -7,9 +7,7 @@
       "forward": ["X-Hasura-Role", "Authorization", "X-Hasura-ddn-token"]
     }
   },
-  "headers": {
-    "hasura-m-auth": "zZkhKqFjqXR4g5MZCsJUZCnhCcoPyZ"
-  },
+  "headers": {},
   "restifiedEndpoints": [
     {
       "path": "/v1/api/rest/artistbyname/:name",
