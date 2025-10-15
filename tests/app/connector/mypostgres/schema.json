@@ -38,9 +38,14 @@
       "description": "Connector metadata.",
       "default": {
         "tables": {},
-        "scalarTypes": {},
-        "compositeTypes": {},
-        "nativeQueries": {}
+        "types": {
+          "scalar": {},
+          "composite": {}
+        },
+        "nativeOperations": {
+          "queries": {},
+          "mutations": {}
+        }
       },
       "allOf": [
         {
@@ -57,7 +62,15 @@
           "tiger",
           "crdb_internal",
           "columnar",
-          "columnar_internal"
+          "columnar_internal",
+          "_timescaledb_catalog",
+          "_timescaledb_functions",
+          "_timescaledb_internal",
+          "_timescaledb_cache",
+          "_timescaledb_config",
+          "timescaledb_experimental",
+          "timescaledb_information",
+          "_timescaledb_debug"
         ],
         "unqualifiedSchemasForTables": ["public"],
         "unqualifiedSchemasForTypesAndProcedures": [
@@ -74,21 +87,26 @@
           {
             "operatorName": "<=",
             "exposedName": "_lte",
-            "operatorKind": "custom"
+            "operatorKind": "lessThanOrEqual"
           },
           {
             "operatorName": ">",
             "exposedName": "_gt",
-            "operatorKind": "custom"
+            "operatorKind": "greaterThan"
           },
           {
             "operatorName": ">=",
             "exposedName": "_gte",
-            "operatorKind": "custom"
+            "operatorKind": "greaterThanOrEqual"
           },
           {
             "operatorName": "<",
             "exposedName": "_lt",
+            "operatorKind": "lessThan"
+          },
+          {
+            "operatorName": "<>",
+            "exposedName": "_neq",
             "operatorKind": "custom"
           },
           {
@@ -239,7 +257,9 @@
           "lseg_perp",
           "network_overlap",
           "network_sub",
+          "network_subeq",
           "network_sup",
+          "network_supeq",
           "on_pb",
           "on_pl",
           "on_ppath",
@@ -333,12 +353,17 @@
           "type": "null"
         }
       ]
+    },
+    "mutationsPrefix": {
+      "description": "Provide a custom prefix for generated mutation names. Defaults to mutations version.",
+      "default": null,
+      "type": ["string", "null"]
     }
   },
   "definitions": {
     "Version": {
       "type": "string",
-      "enum": ["4"]
+      "enum": ["5"]
     },
     "DatabaseConnectionSettings": {
       "description": "Database connection settings.",
@@ -374,6 +399,16 @@
           "allOf": [
             {
               "$ref": "#/definitions/IsolationLevel"
+            }
+          ]
+        },
+        "dynamicSettings": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/DynamicConnectionSettings"
+            },
+            {
+              "type": "null"
             }
           ]
         }
@@ -463,6 +498,77 @@
         }
       ]
     },
+    "DynamicConnectionSettings": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["connectionUris", "mode"],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": ["named"]
+            },
+            "connectionUris": {
+              "$ref": "#/definitions/ConnectionUris"
+            },
+            "fallbackToStatic": {
+              "description": "When set to true, fallback to using the connectionUri if the connection_name request argument is missing If this is not set, the connectionUri is not used at runtime, but will still be used by cli utilities",
+              "default": false,
+              "type": "boolean"
+            },
+            "eagerConnections": {
+              "description": "When set to true, eagerly create connection pools for all connection names at startup If this is not set, connection pools are created lazily when a request is made for a connection name",
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["mode"],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": ["dynamic"]
+            },
+            "fallbackToStatic": {
+              "description": "When set to true, fallback to using the connectionUri if the connection_string request argument is missing If this is not set, the connectionUri is not used at runtime, but will still be used by cli utilities",
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        }
+      ]
+    },
+    "ConnectionUris": {
+      "oneOf": [
+        {
+          "description": "The value of the variable is a JSON object mapping connection names to connection uris",
+          "type": "object",
+          "required": ["variable"],
+          "properties": {
+            "variable": {
+              "$ref": "#/definitions/Variable"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "A map of connection names to connection uris or the environment variables these are stored in",
+          "type": "object",
+          "required": ["map"],
+          "properties": {
+            "map": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/ConnectionUri"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
     "Metadata": {
       "description": "Metadata information.",
       "type": "object",
@@ -475,27 +581,25 @@
             }
           ]
         },
-        "scalarTypes": {
-          "default": {},
+        "types": {
+          "default": {
+            "scalar": {},
+            "composite": {}
+          },
           "allOf": [
             {
-              "$ref": "#/definitions/ScalarTypes"
+              "$ref": "#/definitions/Types"
             }
           ]
         },
-        "compositeTypes": {
-          "default": {},
+        "nativeOperations": {
+          "default": {
+            "queries": {},
+            "mutations": {}
+          },
           "allOf": [
             {
-              "$ref": "#/definitions/CompositeTypes"
-            }
-          ]
-        },
-        "nativeQueries": {
-          "default": {},
-          "allOf": [
-            {
-              "$ref": "#/definitions/NativeQueries"
+              "$ref": "#/definitions/NativeOperations"
             }
           ]
         }
@@ -589,7 +693,7 @@
           "required": ["scalarType"],
           "properties": {
             "scalarType": {
-              "$ref": "#/definitions/ScalarTypeName"
+              "type": "string"
             }
           },
           "additionalProperties": false
@@ -599,7 +703,7 @@
           "required": ["compositeType"],
           "properties": {
             "compositeType": {
-              "$ref": "#/definitions/CompositeTypeName"
+              "type": "string"
             }
           },
           "additionalProperties": false
@@ -615,14 +719,6 @@
           "additionalProperties": false
         }
       ]
-    },
-    "ScalarTypeName": {
-      "description": "A name of a Scalar Type, as it appears in the NDC scheme.",
-      "type": "string"
-    },
-    "CompositeTypeName": {
-      "description": "The name of a Composite Type, as it appears in the NDC schema",
-      "type": "string"
     },
     "Nullable": {
       "description": "Can this column contain null values",
@@ -652,7 +748,7 @@
       }
     },
     "UniquenessConstraint": {
-      "description": "The set of columns that make up a uniqueness constraint.",
+      "description": "The set of columns that make up a uniqueness constraint. We map each table column to their ndc field names.",
       "type": "array",
       "items": {
         "type": "string"
@@ -682,6 +778,19 @@
           "additionalProperties": {
             "type": "string"
           }
+        }
+      }
+    },
+    "Types": {
+      "description": "Information about types.",
+      "type": "object",
+      "required": ["composite", "scalar"],
+      "properties": {
+        "scalar": {
+          "$ref": "#/definitions/ScalarTypes"
+        },
+        "composite": {
+          "$ref": "#/definitions/CompositeTypes"
         }
       }
     },
@@ -740,7 +849,7 @@
       "required": ["returnType"],
       "properties": {
         "returnType": {
-          "$ref": "#/definitions/ScalarTypeName"
+          "type": "string"
         }
       }
     },
@@ -756,7 +865,7 @@
           "$ref": "#/definitions/OperatorKind"
         },
         "argumentType": {
-          "$ref": "#/definitions/ScalarTypeName"
+          "type": "string"
         },
         "isInfix": {
           "default": true,
@@ -767,7 +876,15 @@
     "OperatorKind": {
       "description": "Is it a built-in operator, or a custom operator.",
       "type": "string",
-      "enum": ["equal", "in", "custom"]
+      "enum": [
+        "equal",
+        "in",
+        "lessThan",
+        "lessThanOrEqual",
+        "greaterThan",
+        "greaterThanOrEqual",
+        "custom"
+      ]
     },
     "TypeRepresentation": {
       "description": "Type representation of a scalar type.",
@@ -940,20 +1057,43 @@
         }
       }
     },
+    "NativeOperations": {
+      "description": "Metadata information of Native Operations.",
+      "type": "object",
+      "required": ["mutations", "queries"],
+      "properties": {
+        "queries": {
+          "description": "Native Queries.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/NativeQueries"
+            }
+          ]
+        },
+        "mutations": {
+          "description": "Native Mutations.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/NativeMutations"
+            }
+          ]
+        }
+      }
+    },
     "NativeQueries": {
-      "description": "Metadata information of native queries.",
+      "description": "Metadata information of Native Queries.",
       "type": "object",
       "additionalProperties": {
         "$ref": "#/definitions/NativeQueryInfo"
       }
     },
     "NativeQueryInfo": {
-      "description": "Information about a Native Query",
+      "description": "Information about a Native Operation",
       "type": "object",
       "required": ["columns", "sql"],
       "properties": {
         "sql": {
-          "description": "SQL expression to use for the Native Query. We can interpolate values using `{{variable_name}}` syntax, such as `SELECT * FROM authors WHERE name = {{author_name}}`",
+          "description": "SQL expression to use for the Native Operation. We can interpolate values using `{{variable_name}}` syntax, such as `SELECT * FROM authors WHERE name = {{author_name}}`",
           "allOf": [
             {
               "$ref": "#/definitions/NativeQuerySql"
@@ -961,14 +1101,14 @@
           ]
         },
         "columns": {
-          "description": "Columns returned by the Native Query",
+          "description": "Columns returned by the Native Operation",
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/ReadOnlyColumnInfo"
           }
         },
         "arguments": {
-          "description": "Names and types of arguments that can be passed to this Native Query",
+          "description": "Names and types of arguments that can be passed to this Native Operation",
           "default": {},
           "type": "object",
           "additionalProperties": {
@@ -978,18 +1118,14 @@
         "description": {
           "default": null,
           "type": ["string", "null"]
-        },
-        "isProcedure": {
-          "description": "True if this native query mutates the database",
-          "type": "boolean"
         }
       }
     },
     "NativeQuerySql": {
-      "description": "Native Query SQL location.",
+      "description": "Native Operation SQL location.",
       "anyOf": [
         {
-          "description": "Refer to an external Native Query SQL file.",
+          "description": "Refer to an external Native Operation SQL file.",
           "type": "object",
           "required": ["file"],
           "properties": {
@@ -1000,12 +1136,12 @@
           }
         },
         {
-          "description": "Inline Native Query SQL string.",
+          "description": "Inline Native Operation SQL string.",
           "type": "object",
           "required": ["inline"],
           "properties": {
             "inline": {
-              "description": "An inline Native Query SQL string.",
+              "description": "An inline Native Operation SQL string.",
               "allOf": [
                 {
                   "$ref": "#/definitions/InlineNativeQuerySql"
@@ -1047,6 +1183,13 @@
         }
       }
     },
+    "NativeMutations": {
+      "description": "Metadata information of Native Mutations.",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/NativeQueryInfo"
+      }
+    },
     "IntrospectionOptions": {
       "description": "Options which only influence how the configuration is updated.",
       "type": "object",
@@ -1059,7 +1202,15 @@
             "tiger",
             "crdb_internal",
             "columnar",
-            "columnar_internal"
+            "columnar_internal",
+            "_timescaledb_catalog",
+            "_timescaledb_functions",
+            "_timescaledb_internal",
+            "_timescaledb_cache",
+            "_timescaledb_config",
+            "timescaledb_experimental",
+            "timescaledb_information",
+            "_timescaledb_debug"
           ],
           "type": "array",
           "items": {
@@ -1093,21 +1244,26 @@
             {
               "operatorName": "<=",
               "exposedName": "_lte",
-              "operatorKind": "custom"
+              "operatorKind": "lessThanOrEqual"
             },
             {
               "operatorName": ">",
               "exposedName": "_gt",
-              "operatorKind": "custom"
+              "operatorKind": "greaterThan"
             },
             {
               "operatorName": ">=",
               "exposedName": "_gte",
-              "operatorKind": "custom"
+              "operatorKind": "greaterThanOrEqual"
             },
             {
               "operatorName": "<",
               "exposedName": "_lt",
+              "operatorKind": "lessThan"
+            },
+            {
+              "operatorName": "<>",
+              "exposedName": "_neq",
               "operatorKind": "custom"
             },
             {
@@ -1265,7 +1421,9 @@
             "lseg_perp",
             "network_overlap",
             "network_sub",
+            "network_subeq",
             "network_sup",
+            "network_supeq",
             "on_pb",
             "on_pl",
             "on_ppath",

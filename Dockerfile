@@ -1,17 +1,22 @@
-FROM node:22 as base
+FROM node:24 AS base
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci --force
 
 COPY . .
 
-FROM base as production
-
-ENV NODE_PATH=./dist
-
 RUN npm run build
+RUN npm prune --omit=dev
 
-CMD npm run serve
+FROM gcr.io/distroless/nodejs24-debian12:nonroot
+
+COPY --from=base /app/package*.json ./
+COPY --from=base /app/dist ./dist
+COPY --from=base /app/node_modules ./node_modules
+
+ENV NODE_PATH=/app/dist
+
+CMD ["dist/app.js"]
