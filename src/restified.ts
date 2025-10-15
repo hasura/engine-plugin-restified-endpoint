@@ -33,7 +33,7 @@ export const restifiedHandler = (
           message: String("Unauthorized request!"),
         });
         authSpan.end();
-        
+
         return createResponse({ message: "unauthorized request" }, 401);
       }
 

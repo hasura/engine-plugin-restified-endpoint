@@ -14,9 +14,10 @@ jobs:
           npm install
 
       - name: start dependencies
-        uses: hoverkraft-tech/compose-action@v2.2.0
+        uses: hoverkraft-tech/compose-action@v2
         with:
-          compose-file: "./tests/compose.yaml"
+          cwd: "${{ github.workspace }}/tests"
+          compose-file: "./compose.yaml"
           down-flags: "--volumes"
           up-flags: "--wait"
           services: |

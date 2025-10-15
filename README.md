@@ -32,7 +32,7 @@ guide](https://hasura.io/docs/3.0/plugins/restified-endpoints/how-to).
 
 ### Docker
 
-Create a configuration file and run it with docker: 
+Create a configuration file and run it with docker:
 
 ```
 docker run -v ./configuration.json:/config/configuration.json \

@@ -15,7 +15,7 @@ import { tracer } from "./modules/tracing/tracer";
 import { configSchema } from "./modules/utils/types";
 import { Config } from "./modules/utils/types";
 import { routeHandler } from "./handler";
-import pino from 'pino-http';
+import pino from "pino-http";
 
 // Add type for trace headers
 interface TraceHeaders {
@@ -58,7 +58,7 @@ const app = express();
 const port = process.env.PORT || 8787;
 
 // Logging middleware
-app.use(pino())
+app.use(pino());
 
 // Middleware to parse JSON bodies
 app.use(express.json());

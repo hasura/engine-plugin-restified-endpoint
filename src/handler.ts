@@ -18,8 +18,11 @@ export const routeHandler =
         });
 
         span.setAttribute("graphql.url", graphqlUrl);
-        req.log.debug({  body: req.body, graphqlUrl: graphqlUrl }, 'received restified request');
-        
+        req.log.debug(
+          { body: req.body, graphqlUrl: graphqlUrl },
+          "received restified request",
+        );
+
         // Handle the request
         const response = await restifiedHandler(req, graphqlUrl, config);
         const responseData = await response.json();
