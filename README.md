@@ -28,6 +28,98 @@ guide](https://hasura.io/docs/3.0/plugins/restified-endpoints/how-to).
    - Executes the corresponding GraphQL query with the extracted variables
    - Returns the GraphQL response as a REST-style JSON response
 
+## Deployment
+
+### Docker
+
+Create a configuration file and run it with docker: 
+
+```
+docker run -v ./configuration.json:/config/configuration.json \
+   -e HASURA_DDN_PLUGIN_CONFIG_PATH=/config \
+   -e GRAPHQL_SERVER_URL=http://engine:3000/graphql \
+   -e HASURA_M_AUTH=randomsecret \
+   ghcr.io/hasura/engine-plugin-restified-endpoint:latest
+```
+
+### Docker Compose
+
+```yaml
+services:
+  plugin:
+    image: ghcr.io/hasura/engine-plugin-restified-endpoint:latest
+    ports:
+      - 8787:8787
+    environment:
+      HASURA_DDN_PLUGIN_CONFIG_PATH: "/config"
+      GRAPHQL_SERVER_URL: "http://engine:3000/graphql"
+      HASURA_M_AUTH: <api-key for hasura-m-auth header>
+      # Optional OpenTelemetry config
+      # OTEL_SERVICE_NAME: "plugin"
+      # OTEL_EXPORTER_OTLP_ENDPOINT: "http://jaeger:4317"
+    volumes:
+      - type: bind
+        source: ./config/plugin/
+        target: /config/
+        read_only: true
+```
+
+### AWS Lambda with CDK
+
+AWS Lambda requires us to upload the source code. So you need to clone this repo and edit codes directly.
+
+1. Edit configuration at `src/config.ts`.
+2. Edit the GraphQL endpoint at `src/lambda.ts`.
+3. Build the code
+
+```
+npm run build
+```
+
+4. Install required dependencies for Lambda runtime
+
+```bash
+cp package.lambda.json dist/package.json
+cd dist && npm install && cd ..
+```
+
+5. Install AWS CDK `npm install -g aws-cdk`.
+6. Export AWS credentials environment variables.
+7. Edit the desired region config in `bin/serverless-aws.ts`.
+8. Run bootstrap for the first deployment.
+
+```bash
+cdk synth
+cdk bootstrap
+```
+
+8. Deploy the stack.
+
+```bash
+cdk deploy
+```
+
+### CloudFlare worker
+
+For cloud deployment, you can use the following steps in addition to the local development steps:
+
+1. Create an account on Cloudflare.
+
+2. Login to Cloudflare:
+
+   ```sh
+   wrangler login
+   ```
+
+3. Deploy to Cloudflare:
+
+   ```sh
+   npm run deploy
+   ```
+
+The above command should deploy the RESTified endpoints plugin (as a lambda) using Cloudflare workers. The URL of the
+deployed plugin will be displayed in the terminal.
+
 ## Development (Express)
 
 To run the plugin locally using Express, you can use the following steps:
@@ -108,27 +200,6 @@ To run the plugin locally, you can use the following steps:
 
 The above command will start a local server that listens for incoming requests. The server runs on port 8787 by default.
 The URL of the local server will be displayed in the terminal.
-
-### Cloud deployment
-
-For cloud deployment, you can use the following steps in addition to the local development steps:
-
-1. Create an account on Cloudflare.
-
-2. Login to Cloudflare:
-
-   ```sh
-   wrangler login
-   ```
-
-3. Deploy to Cloudflare:
-
-   ```sh
-   npm run deploy
-   ```
-
-The above command should deploy the RESTified endpoints plugin (as a lambda) using Cloudflare workers. The URL of the
-deployed plugin will be displayed in the terminal.
 
 ## Testing
 

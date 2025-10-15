@@ -12,7 +12,7 @@
     {
       "path": "/v1/api/rest/artistbyname/:name",
       "methods": ["GET", "POST"],
-      "query": "query artistByName($name: String!) { artist(where: {name: {_eq: $name}}) { name }}"
+      "query": "query artistByName($name: string!) { artist(where: {name: {_eq: $name}}) { name }}"
     },
     {
       "path": "/v1/api/rest/artists",

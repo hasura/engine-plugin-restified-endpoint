@@ -1,0 +1,24 @@
+{
+  "name": "restified-endpoints",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {},
+  "dependencies": {
+    "@opentelemetry/api": "1.6.0",
+    "@opentelemetry/core": "1.17.0",
+    "@opentelemetry/instrumentation": "0.43.0",
+    "@opentelemetry/instrumentation-http": "0.43.0",
+    "@opentelemetry/propagator-b3": "1.17.0",
+    "@opentelemetry/resources": "1.17.0",
+    "@opentelemetry/sdk-trace-base": "1.17.0",
+    "@opentelemetry/sdk-trace-node": "1.17.0",
+    "@opentelemetry/semantic-conventions": "1.17.0",
+    "aws-cdk-lib": "2.215.0",
+    "constructs": "^10.0.0",
+    "express": "^4.21.1",
+    "pino": "^10.0.0",
+    "pino-http": "^11.0.0",
+    "serverless-http": "^4.0.0",
+    "zod": "^3.24.2"
+  }
+}

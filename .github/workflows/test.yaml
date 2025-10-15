@@ -16,12 +16,13 @@ jobs:
       - name: start dependencies
         uses: hoverkraft-tech/compose-action@v2.2.0
         with:
-          compose-file: "./tests/docker-compose.yaml"
+          compose-file: "./tests/compose.yaml"
           down-flags: "--volumes"
           up-flags: "--wait"
           services: |
             engine
-            connector
+            postgres
+            app_mypostgres
             plugin
 
       - name: run tests
