@@ -52,11 +52,9 @@ services:
       - 8787:8787
     environment:
       HASURA_DDN_PLUGIN_CONFIG_PATH: "/config"
-      GRAPHQL_SERVER_URL: "http://engine:3000/graphql"
+      GRAPHQL_SERVER_URL: "http://engine:3280/graphql"
       HASURA_M_AUTH: <api-key for hasura-m-auth header>
-      # Optional OpenTelemetry config
-      # OTEL_SERVICE_NAME: "plugin"
-      # OTEL_EXPORTER_OTLP_ENDPOINT: "http://jaeger:4317"
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://local.hasura.dev:4317}
     volumes:
       - type: bind
         source: ./config/plugin/
@@ -70,23 +68,22 @@ AWS Lambda requires us to upload the source code. So you need to clone this repo
 
 1. Edit configuration at `src/config.ts`.
 2. Edit the GraphQL endpoint at `src/lambda.ts`.
-3. Build the code
+3. Build the code and dependencies for Lambda manifests.
+   - **Linux / MacOS**
 
-```
-npm run build
-```
+     ```bash
+     npm run build:lambda
+     ```
 
-4. Install required dependencies for Lambda runtime
+   - **Windows**
+     - Run `npm run build`.
+     - Copy `package.lambda.json` to `dist/package.lambda.json`.
+     - Go to `dist` folder and install packages `npm install`.
 
-```bash
-cp package.lambda.json dist/package.json
-cd dist && npm install && cd ..
-```
-
-5. Install AWS CDK `npm install -g aws-cdk`.
-6. Export AWS credentials environment variables.
-7. Edit the desired region config in `bin/serverless-aws.ts`.
-8. Run bootstrap for the first deployment.
+4. Install AWS CDK `npm install -g aws-cdk`.
+5. Login or export environment variables of AWS account.
+6. Edit the desired region config in `bin/serverless-aws.ts`.
+7. Run bootstrap for the first deployment.
 
 ```bash
 cdk synth
