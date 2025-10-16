@@ -11,6 +11,8 @@
     "lint": "npx --yes prettier --check .",
     "format": "npx --yes prettier --write .",
     "build": "tsc",
+    "build:lambda": "npm run build && npm run install-lambda-packages",
+    "install-lambda-packages": "cp package.lambda.json dist/package.json && cd dist && npm install",
     "serve": "NODE_PATH=./dist node dist/app.js",
     "serve-dev": "nodemon src/app.ts",
     "test": "jest",
