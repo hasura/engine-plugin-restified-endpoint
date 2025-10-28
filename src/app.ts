@@ -32,7 +32,7 @@ if (process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
           injectEncoding: B3InjectEncoding.MULTI_HEADER, // Use multi-header B3 format
         }),
       ],
-    })
+    }),
   );
 
   const traceExporter = new OTLPTraceExporter({
@@ -76,11 +76,11 @@ app.use(
           ? process.env.REDACTED_HEADERS.split(",")
               .map((key) => key.trim())
               .filter((key) => key)
-          : []
+          : [],
       ), // Specify headers to redact
       censor: "[REDACTED]", // Optional: replace with a custom string
     },
-  })
+  }),
 );
 
 // Middleware to parse JSON bodies
