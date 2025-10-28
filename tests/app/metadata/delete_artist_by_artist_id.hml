@@ -1,0 +1,62 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: delete_artist_by_artist_id_response
+  description: Responses from the 'delete_artist_by_artist_id' procedure
+  fields:
+    - name: affected_rows
+      type: int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[artist!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: delete_artist_by_artist_id_response
+    inputTypeName: delete_artist_by_artist_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: mypostgres
+      dataConnectorObjectType: delete_artist_by_artist_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: delete_artist_by_artist_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: delete_artist_by_artist_id
+  outputType: delete_artist_by_artist_id_response!
+  arguments:
+    - name: key_artist_id
+      type: int32!
+    - name: pre_check
+      type: artist_bool_exp
+      description: Delete permission predicate over the 'artist' collection
+  source:
+    dataConnectorName: mypostgres
+    dataConnectorCommand:
+      procedure: delete_artist_by_artist_id
+  graphql:
+    rootFieldName: delete_artist_by_artist_id
+    rootFieldKind: Mutation
+  description: Delete any row on the 'artist' collection using the 'artist_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: delete_artist_by_artist_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

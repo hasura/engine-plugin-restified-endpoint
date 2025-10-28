@@ -5,11 +5,8 @@ import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
-import { Resource, resourceFromAttributes } from "@opentelemetry/resources";
-import {
-  ATTR_SERVICE_NAME,
-  SemanticResourceAttributes,
-} from "@opentelemetry/semantic-conventions";
+import { resourceFromAttributes } from "@opentelemetry/resources";
+import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 import { SpanStatusCode, context, propagation } from "@opentelemetry/api";
 import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import { B3Propagator, B3InjectEncoding } from "@opentelemetry/propagator-b3";
@@ -65,7 +62,26 @@ const app = express();
 const port = process.env.PORT || 8787;
 
 // Logging middleware
-app.use(pino());
+app.use(
+  pino({
+    level: process.env.LOG_LEVEL || "info",
+    redact: {
+      paths: [
+        "req.headers.authorization",
+        "req.headers.cookie",
+        "req.headers.hasura-m-auth",
+        "req.headers.x-hasura-ddn-token",
+      ].concat(
+        process.env.REDACTED_HEADERS
+          ? process.env.REDACTED_HEADERS.split(",")
+              .map((key) => key.trim())
+              .filter((key) => key)
+          : [],
+      ), // Specify headers to redact
+      censor: "[REDACTED]", // Optional: replace with a custom string
+    },
+  }),
+);
 
 // Middleware to parse JSON bodies
 app.use(express.json());

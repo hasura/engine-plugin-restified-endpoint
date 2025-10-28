@@ -88,6 +88,8 @@ export const restifiedHandler = (
 
       // Execute query
       const variables = extractVariables(rawRequest, endpoint);
+      request.log.debug({ endpoint, variables }, "transformed request");
+
       const result = await executeGraphQL(
         endpoint.query,
         variables,

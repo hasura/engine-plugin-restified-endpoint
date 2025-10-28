@@ -1,0 +1,155 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_artist_artist_id
+  description: Update the 'artist_id' column in the 'artist' collection
+  fields:
+    - name: _set
+      type: int32!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_artist_artist_id
+    inputTypeName: update_column_artist_artist_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: mypostgres
+      dataConnectorObjectType: update_column_artist_artist_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_artist_artist_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - _set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_artist_name
+  description: Update the 'name' column in the 'artist' collection
+  fields:
+    - name: _set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_artist_name
+    inputTypeName: update_column_artist_name_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: mypostgres
+      dataConnectorObjectType: update_column_artist_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_artist_name
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - _set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_artist_by_artist_id_update_columns
+  description: Update the columns of the 'artist' collection
+  fields:
+    - name: artist_id
+      type: update_column_artist_artist_id
+      description: Update the 'artist_id' column in the 'artist' collection.
+    - name: name
+      type: update_column_artist_name
+      description: Update the 'name' column in the 'artist' collection.
+  graphql:
+    typeName: update_artist_by_artist_id_update_columns
+    inputTypeName: update_artist_by_artist_id_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: mypostgres
+      dataConnectorObjectType: update_artist_by_artist_id_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_artist_by_artist_id_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - artist_id
+          - name
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_artist_by_artist_id_response
+  description: Responses from the 'update_artist_by_artist_id' procedure
+  fields:
+    - name: affected_rows
+      type: int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[artist!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_artist_by_artist_id_response
+    inputTypeName: update_artist_by_artist_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: mypostgres
+      dataConnectorObjectType: update_artist_by_artist_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_artist_by_artist_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_artist_by_artist_id
+  outputType: update_artist_by_artist_id_response!
+  arguments:
+    - name: key_artist_id
+      type: int32!
+    - name: post_check
+      type: artist_bool_exp
+      description: Update permission post-condition predicate over the 'artist' collection
+    - name: pre_check
+      type: artist_bool_exp
+      description: Update permission pre-condition predicate over the 'artist' collection
+    - name: update_columns
+      type: update_artist_by_artist_id_update_columns!
+  source:
+    dataConnectorName: mypostgres
+    dataConnectorCommand:
+      procedure: update_artist_by_artist_id
+  graphql:
+    rootFieldName: update_artist_by_artist_id
+    rootFieldKind: Mutation
+  description: Update any row on the 'artist' collection using the 'artist_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_artist_by_artist_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,91 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_artist_object
+  fields:
+    - name: artist_id
+      type: int32!
+    - name: name
+      type: string
+  graphql:
+    typeName: insert_artist_object
+    inputTypeName: insert_artist_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: mypostgres
+      dataConnectorObjectType: insert_artist_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_artist_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - artist_id
+          - name
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_artist_response
+  description: Responses from the 'insert_artist' procedure
+  fields:
+    - name: affected_rows
+      type: int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[artist!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_artist_response
+    inputTypeName: insert_artist_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: mypostgres
+      dataConnectorObjectType: insert_artist_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_artist_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_artist
+  outputType: insert_artist_response!
+  arguments:
+    - name: objects
+      type: "[insert_artist_object!]!"
+    - name: post_check
+      type: artist_bool_exp
+      description: Insert permission predicate over the 'artist' collection
+  source:
+    dataConnectorName: mypostgres
+    dataConnectorCommand:
+      procedure: insert_artist
+  graphql:
+    rootFieldName: insert_artist
+    rootFieldKind: Mutation
+  description: Insert into the artist table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_artist
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -9,7 +9,7 @@ definition:
     matchPath: "/v1/api/rest/*"
     matchMethods: ["GET", "POST"]
     request:
-      method: GET
+      method: POST
       headers:
         forward:
           - Authorization
