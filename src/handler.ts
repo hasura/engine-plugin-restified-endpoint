@@ -20,7 +20,7 @@ export const routeHandler =
         span.setAttribute("graphql.url", graphqlUrl);
         req.log.debug(
           { body: req.body, graphqlUrl: graphqlUrl },
-          "received restified request",
+          "received restified request"
         );
 
         // Handle the request
