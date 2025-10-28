@@ -35,7 +35,7 @@ if (process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
           injectEncoding: B3InjectEncoding.MULTI_HEADER, // Use multi-header B3 format
         }),
       ],
-    })
+    }),
   );
 
   const traceExporter = new OTLPTraceExporter({
@@ -68,7 +68,7 @@ const port = process.env.PORT || 8787;
 app.use(
   pino({
     level: process.env.LOG_LEVEL || "info",
-  })
+  }),
 );
 
 // Middleware to parse JSON bodies

@@ -13,7 +13,7 @@ import { Request } from "express";
 export const restifiedHandler = (
   request: Request,
   graphqlServerUrl: string,
-  config: Config
+  config: Config,
 ) => {
   return tracer.startActiveSpan("restifiedHandler", async (parentSpan) => {
     parentSpan.setAttribute("internal.visibility", String("user"));
@@ -54,7 +54,7 @@ export const restifiedHandler = (
               body: "object (optional)",
             },
           },
-          400
+          400,
         );
       }
 
@@ -65,7 +65,7 @@ export const restifiedHandler = (
       const endpoint = config.restifiedEndpoints.find(
         (e) =>
           matchPath(e.path, rawRequest.path) &&
-          e.methods.includes(rawRequest.method)
+          e.methods.includes(rawRequest.method),
       );
 
       if (!endpoint) {
@@ -79,7 +79,7 @@ export const restifiedHandler = (
             requestedPath: rawRequest.path,
             requestedMethod: rawRequest.method,
           },
-          404
+          404,
         );
       }
 
@@ -94,7 +94,7 @@ export const restifiedHandler = (
         endpoint.query,
         variables,
         request,
-        graphqlServerUrl
+        graphqlServerUrl,
       );
 
       parentSpan.setStatus({
@@ -113,7 +113,7 @@ export const restifiedHandler = (
           error: error.message,
           ...(process.env.NODE_ENV === "development" && { stack: error.stack }),
         },
-        500
+        500,
       );
     } finally {
       parentSpan.end();
