@@ -2,14 +2,8 @@ import express from "express";
 
 import { NodeSDK } from "@opentelemetry/sdk-node";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
-import {
-  BatchSpanProcessor,
-  ConsoleSpanExporter,
-  SimpleSpanProcessor,
-} from "@opentelemetry/sdk-trace-base";
+import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
-import { resourceFromAttributes } from "@opentelemetry/resources";
-import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 import { SpanStatusCode, context, propagation } from "@opentelemetry/api";
 import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import { B3Propagator, B3InjectEncoding } from "@opentelemetry/propagator-b3";
@@ -23,7 +17,7 @@ import pino from "pino-http";
 
 if (process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
   console.log(
-    `Exporting OpenTelemetry traces to ${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}`,
+    `Exporting OpenTelemetry traces to ${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}`
   );
   // Register both W3C and B3 propagators
   propagation.setGlobalPropagator(
@@ -34,7 +28,7 @@ if (process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
           injectEncoding: B3InjectEncoding.MULTI_HEADER, // Use multi-header B3 format
         }),
       ],
-    }),
+    })
   );
 
   const traceExporter = new OTLPTraceExporter({
@@ -83,11 +77,11 @@ app.use(
           ? process.env.REDACTED_HEADERS.split(",")
               .map((key) => key.trim())
               .filter((key) => key)
-          : [],
+          : []
       ), // Specify headers to redact
       censor: "[REDACTED]", // Optional: replace with a custom string
     },
-  }),
+  })
 );
 
 // Middleware to parse JSON bodies
