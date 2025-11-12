@@ -54,7 +54,7 @@ services:
       HASURA_DDN_PLUGIN_CONFIG_PATH: "/config"
       GRAPHQL_SERVER_URL: "http://engine:3280/graphql"
       HASURA_M_AUTH: <api-key for hasura-m-auth header>
-      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://local.hasura.dev:4317}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://local.hasura.dev:4318}
     volumes:
       - type: bind
         source: ./config/plugin/
@@ -69,6 +69,7 @@ AWS Lambda requires us to upload the source code. So you need to clone this repo
 1. Edit configuration at `src/config.ts`.
 2. Edit the GraphQL endpoint at `src/lambda.ts`.
 3. Build the code and dependencies for Lambda manifests.
+
    - **Linux / MacOS**
 
      ```bash
@@ -136,7 +137,7 @@ To run the plugin locally using Express, you can use the following steps:
 3. Export the environment variables:
 
    ```sh
-   export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318/v1/traces"
+   export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318"
    export OTEL_EXPORTER_PAT="your-pat-here"
    export GRAPHQL_SERVER_URL="http://localhost:3280/graphql"
    export HASURA_DDN_PLUGIN_CONFIG_PATH="../tests/config/plugin"
