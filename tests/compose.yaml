@@ -12,7 +12,7 @@ services:
       ENABLE_SQL_INTERFACE: "true"
       INTROSPECTION_METADATA_FILE: /md/metadata.json
       METADATA_PATH: /md/open_dd.json
-      OTLP_ENDPOINT: http://jeager:4317
+      OTLP_ENDPOINT: http://jaeger:4317
     extra_hosts:
       - local.hasura.dev:host-gateway
     labels:
@@ -27,9 +27,8 @@ services:
     ports:
       - 8787:8787
     environment:
-      OTEL_SERVICE_NAME: "plugin"
       HASURA_DDN_PLUGIN_CONFIG_PATH: "/config"
-      OTEL_EXPORTER_OTLP_ENDPOINT: "http://jaeger:4317"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://jaeger:4318"
       GRAPHQL_SERVER_URL: "http://engine:3000/graphql"
       HASURA_M_AUTH: zZkhKqFjqXR4g5MZCsJUZCnhCcoPyZ
       LOG_LEVEL: debug
