@@ -69,7 +69,6 @@ AWS Lambda requires us to upload the source code. So you need to clone this repo
 1. Edit configuration at `src/config.ts`.
 2. Edit the GraphQL endpoint at `src/lambda.ts`.
 3. Build the code and dependencies for Lambda manifests.
-
    - **Linux / MacOS**
 
      ```bash
