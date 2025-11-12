@@ -54,7 +54,7 @@ services:
       HASURA_DDN_PLUGIN_CONFIG_PATH: "/config"
       GRAPHQL_SERVER_URL: "http://engine:3280/graphql"
       HASURA_M_AUTH: <api-key for hasura-m-auth header>
-      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://local.hasura.dev:4317}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://local.hasura.dev:4318}
     volumes:
       - type: bind
         source: ./config/plugin/
@@ -136,7 +136,7 @@ To run the plugin locally using Express, you can use the following steps:
 3. Export the environment variables:
 
    ```sh
-   export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318/v1/traces"
+   export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318"
    export OTEL_EXPORTER_PAT="your-pat-here"
    export GRAPHQL_SERVER_URL="http://localhost:3280/graphql"
    export HASURA_DDN_PLUGIN_CONFIG_PATH="../tests/config/plugin"
